@@ -1,0 +1,49 @@
+﻿@page "/pedidos/details"
+@inject Projeto_Blazor_Dupla.Data.ApplicationDbContext DB
+@using Projeto_Blazor_Dupla.Data
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Pedido</h4>
+    <hr />
+    @if (pedido is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">IdCliente</dt>
+            <dd class="col-sm-10">@pedido.IdCliente</dd>
+            <dt class="col-sm-2">IdRemedio</dt>
+            <dd class="col-sm-10">@pedido.IdRemedio</dd>
+            <dt class="col-sm-2">DtPedido</dt>
+            <dd class="col-sm-10">@pedido.DtPedido</dd>
+        </dl>
+        <div>
+            <a href="@($"/pedidos/edit?id={pedido.Id}")">Edit</a> |
+            <a href="@($"/pedidos")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    Pedido? pedido;
+
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        pedido = await DB.Pedidos.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (pedido is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

@@ -1,0 +1,24 @@
+﻿@page "/pedidos"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@inject Projeto_Blazor_Dupla.Data.ApplicationDbContext DB
+@using Projeto_Blazor_Dupla.Data
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="pedidos/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="DB.Pedidos">
+    <PropertyColumn Property="pedido => pedido.IdCliente" />
+    <PropertyColumn Property="pedido => pedido.IdRemedio" />
+    <PropertyColumn Property="pedido => pedido.DtPedido" />
+
+    <TemplateColumn Context="pedido">
+        <a href="@($"pedidos/edit?id={pedido.Id}")">Edit</a> |
+        <a href="@($"pedidos/details?id={pedido.Id}")">Details</a> |
+        <a href="@($"pedidos/delete?id={pedido.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>

@@ -1,0 +1,47 @@
+﻿@page "/clientes/details"
+@inject Projeto_Blazor_Dupla.Data.ApplicationDbContext DB
+@using Projeto_Blazor_Dupla.Data
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Cliente</h4>
+    <hr />
+    @if (cliente is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Nome</dt>
+            <dd class="col-sm-10">@cliente.Nome</dd>
+            <dt class="col-sm-2">DtNascimento</dt>
+            <dd class="col-sm-10">@cliente.DtNascimento</dd>
+        </dl>
+        <div>
+            <a href="@($"/clientes/edit?id={cliente.Id}")">Edit</a> |
+            <a href="@($"/clientes")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    Cliente? cliente;
+
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        cliente = await DB.Clientes.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (cliente is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

@@ -1,0 +1,49 @@
+﻿@page "/remedios/details"
+@inject Projeto_Blazor_Dupla.Data.ApplicationDbContext DB
+@using Projeto_Blazor_Dupla.Data
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Remedio</h4>
+    <hr />
+    @if (remedio is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Nome</dt>
+            <dd class="col-sm-10">@remedio.Nome</dd>
+            <dt class="col-sm-2">Descricao</dt>
+            <dd class="col-sm-10">@remedio.Descricao</dd>
+            <dt class="col-sm-2">Valor</dt>
+            <dd class="col-sm-10">@remedio.Valor</dd>
+        </dl>
+        <div>
+            <a href="@($"/remedios/edit?id={remedio.Id}")">Edit</a> |
+            <a href="@($"/remedios")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    Remedio? remedio;
+
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        remedio = await DB.Remedios.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (remedio is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

@@ -1,0 +1,96 @@
+﻿@page "/Pedidos/edit"
+@inject Projeto_Blazor_Dupla.Data.ApplicationDbContext DB
+@using Projeto_Blazor_Dupla.Data
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>Pedido</h4>
+<hr />
+@if (Pedido is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Pedido" OnValidSubmit="UpdatePedido" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <input type="hidden" name="Pedido.Id" value="@Pedido.Id" />
+                <div class="mb-3">
+                    <label for="idcliente" class="form-label">IdCliente:</label>
+                    <InputNumber id="idcliente" @bind-Value="Pedido.IdCliente" class="form-control" />
+                    <ValidationMessage For="() => Pedido.IdCliente" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="idremedio" class="form-label">IdRemedio:</label>
+                    <InputNumber id="idremedio" @bind-Value="Pedido.IdRemedio" class="form-control" />
+                    <ValidationMessage For="() => Pedido.IdRemedio" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="dtpedido" class="form-label">DtPedido:</label>
+                    <InputDate id="dtpedido" @bind-Value="Pedido.DtPedido" class="form-control" />
+                    <ValidationMessage For="() => Pedido.DtPedido" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/pedidos">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Pedido? Pedido { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Pedido ??= await DB.Pedidos.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Pedido is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdatePedido()
+    {
+        DB.Attach(Pedido!).State = EntityState.Modified;
+
+        try
+        {
+            await DB.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!PedidoExists(Pedido!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/pedidos");
+    }
+
+    bool PedidoExists(int id)
+    {
+        return DB.Pedidos.Any(e => e.Id == id);
+    }
+}

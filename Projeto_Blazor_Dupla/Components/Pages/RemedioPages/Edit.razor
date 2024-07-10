@@ -1,0 +1,96 @@
+﻿@page "/Remedios/edit"
+@inject Projeto_Blazor_Dupla.Data.ApplicationDbContext DB
+@using Projeto_Blazor_Dupla.Data
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>Remedio</h4>
+<hr />
+@if (Remedio is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Remedio" OnValidSubmit="UpdateRemedio" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <input type="hidden" name="Remedio.Id" value="@Remedio.Id" />
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome:</label>
+                    <InputText id="nome" @bind-Value="Remedio.Nome" class="form-control" />
+                    <ValidationMessage For="() => Remedio.Nome" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label">Descricao:</label>
+                    <InputText id="descricao" @bind-Value="Remedio.Descricao" class="form-control" />
+                    <ValidationMessage For="() => Remedio.Descricao" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="valor" class="form-label">Valor:</label>
+                    <InputNumber id="valor" @bind-Value="Remedio.Valor" class="form-control" />
+                    <ValidationMessage For="() => Remedio.Valor" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/remedios">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Remedio? Remedio { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Remedio ??= await DB.Remedios.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Remedio is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdateRemedio()
+    {
+        DB.Attach(Remedio!).State = EntityState.Modified;
+
+        try
+        {
+            await DB.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!RemedioExists(Remedio!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/remedios");
+    }
+
+    bool RemedioExists(int id)
+    {
+        return DB.Remedios.Any(e => e.Id == id);
+    }
+}

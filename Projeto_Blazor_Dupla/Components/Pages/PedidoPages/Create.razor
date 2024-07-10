@@ -1,0 +1,53 @@
+﻿@page "/pedidos/create"
+@inject Projeto_Blazor_Dupla.Data.ApplicationDbContext DB
+@using Projeto_Blazor_Dupla.Data
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h4>Pedido</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Pedido" OnValidSubmit="AddPedido" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="mb-3">
+                <label for="idcliente" class="form-label">IdCliente:</label> 
+                <InputNumber id="idcliente" @bind-Value="Pedido.IdCliente" class="form-control" /> 
+                <ValidationMessage For="() => Pedido.IdCliente" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="idremedio" class="form-label">IdRemedio:</label> 
+                <InputNumber id="idremedio" @bind-Value="Pedido.IdRemedio" class="form-control" /> 
+                <ValidationMessage For="() => Pedido.IdRemedio" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="dtpedido" class="form-label">DtPedido:</label> 
+                <InputDate id="dtpedido" @bind-Value="Pedido.DtPedido" class="form-control" /> 
+                <ValidationMessage For="() => Pedido.DtPedido" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/pedidos">Back to List</a>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    public Pedido Pedido { get; set; } = new();
+
+    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+    public async Task AddPedido()
+    {
+        DB.Pedidos.Add(Pedido);
+        await DB.SaveChangesAsync();
+        NavigationManager.NavigateTo("/pedidos");
+    }
+}

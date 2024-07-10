@@ -1,0 +1,24 @@
+﻿@page "/remedios"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@inject Projeto_Blazor_Dupla.Data.ApplicationDbContext DB
+@using Projeto_Blazor_Dupla.Data
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="remedios/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="DB.Remedios">
+    <PropertyColumn Property="remedio => remedio.Nome" />
+    <PropertyColumn Property="remedio => remedio.Descricao" />
+    <PropertyColumn Property="remedio => remedio.Valor" />
+
+    <TemplateColumn Context="remedio">
+        <a href="@($"remedios/edit?id={remedio.Id}")">Edit</a> |
+        <a href="@($"remedios/details?id={remedio.Id}")">Details</a> |
+        <a href="@($"remedios/delete?id={remedio.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
